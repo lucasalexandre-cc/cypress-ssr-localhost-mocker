@@ -13,7 +13,7 @@ function createSut() {
 
 describe('SSRLocalhostMocker', () => {
   describe('init', () => {
-    it('should create localhost servers if never create before', async () => {
+    it('should just create localhost servers if never create before', async () => {
       const { sut, localhostServerFactory } = createSut();
 
       const initSpy = jest.spyOn(localhostServerFactory, 'create');
@@ -23,6 +23,12 @@ describe('SSRLocalhostMocker', () => {
       expect(initSpy).toHaveBeenCalledTimes(2);
       expect(initSpy).toHaveBeenCalledWith(3000);
       expect(initSpy).toHaveBeenCalledWith(3001);
+
+      initSpy.mockReset();
+
+      await sut.init(3000, 3001);
+
+      expect(initSpy).not.toHaveBeenCalled();
     });
   });
 });
