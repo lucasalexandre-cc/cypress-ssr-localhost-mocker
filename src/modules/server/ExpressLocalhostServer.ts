@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response } from 'express';
 
 import { IRequestInfo } from '../../types';
 import { ILocalhostServer } from './types';
@@ -21,15 +21,7 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
 
     for (const method of methods) {
       this.app[method.toLowerCase()]('*', (req, res) => {
-        const mockRequest = this.mockRequests.find((mockRequest) => mockRequest.matchRequest(req));
-
-        if (!mockRequest) {
-          console.error(`No mock request found for ${method} ${req.url}`);
-          res.status(404).send();
-          return;
-        }
-
-        mockRequest.handleResponse(res);
+        this.handleRequest(method, req, res);
       });
     }
 
@@ -55,5 +47,16 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
 
   clearAllMocks(): void {
     throw new Error('Method not implemented.');
+  }
+
+  private handleRequest(method: string, req: Request, res: Response) {
+    const mockRequest = this.mockRequests.find((mockRequest) => mockRequest.matchRequest(req));
+
+    if (!mockRequest) {
+      res.status(404).send();
+      return;
+    }
+
+    mockRequest.handleResponse(res);
   }
 }
