@@ -14,4 +14,5 @@ export interface ISSRLocalhostMocker {
   init(...ports: number[]): Promise<void>;
   close(): Promise<void>;
   mockRequest(port: number, requestInfo: IRequestInfo): void;
+  clearAllMocks(port: number): void;
 }

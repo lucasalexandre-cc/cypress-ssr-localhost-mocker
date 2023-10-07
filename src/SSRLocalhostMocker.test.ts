@@ -127,4 +127,16 @@ describe('SSRLocalhostMocker', () => {
       expect(mockRequestSpy3001).not.toHaveBeenCalled();
     });
   });
+
+  describe('clearAllMocks', () => {
+    it('should throw if try to clear all mock request from a non initialized server', () => {
+      const { sut } = createSut();
+
+      const testFunction = () => {
+        sut.clearAllMocks(3000);
+      };
+
+      expect(testFunction).toThrowError('SSRLocalhostMocker: trying to clear all mock request from a non initialized server');
+    });
+  });
 });

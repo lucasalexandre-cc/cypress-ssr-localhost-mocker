@@ -9,6 +9,7 @@ export class LocalhostServer implements ILocalhostServer {
   async init(): Promise<void> {}
   async close(): Promise<void> {}
   mockRequest(requestInfo: any): void {}
+  clearAllMocks(): void {}
 
   getPort(): number {
     return this.port;

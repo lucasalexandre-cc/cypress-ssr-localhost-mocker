@@ -9,4 +9,5 @@ export interface ILocalhostServer {
   close(): Promise<void>;
   getPort(): number;
   mockRequest(requestInfo: IRequestInfo): void;
+  clearAllMocks(): void;
 }
