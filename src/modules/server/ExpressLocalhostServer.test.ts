@@ -110,4 +110,14 @@ describe('ExpressLocalhostServer', () => {
       expect(closeFn).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('getPort', () => {
+    it('should return port', () => {
+      const sut = new ExpressLocalhostServer(3000);
+
+      const result = sut.getPort();
+
+      expect(result).toBe(3000);
+    });
+  });
 });
