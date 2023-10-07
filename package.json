@@ -6,6 +6,10 @@
   "files": [
     "dist"
   ],
+  "scripts": {
+    "build": "rm -rf dist/ && tsc",
+    "test": "jest"
+  },
   "author": "Lucas Alexandre",
   "license": "MIT",
   "keywords": [
