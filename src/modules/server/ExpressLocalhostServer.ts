@@ -1,3 +1,4 @@
+import { Server } from 'http';
 import express, { Express, Request, Response } from 'express';
 
 import { IRequestInfo } from '../../types';
@@ -7,7 +8,7 @@ import { IMockRequest } from '../request/types';
 const methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
 export default class ExpressLocalhostServer implements ILocalhostServer {
-  private serverOn: boolean = false;
+  private server: Server | null = null;
   private app: Express;
   private mockRequests: IMockRequest[] = [];
 
@@ -17,7 +18,7 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
   }
 
   init(): Promise<void> {
-    if (this.serverOn) return;
+    if (this.server) return;
 
     for (const method of methods) {
       this.app[method.toLowerCase()]('*', (req, res) => {
@@ -26,15 +27,22 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
     }
 
     return new Promise((resolve) => {
-      this.app.listen(this.port, () => {
-        this.serverOn = true;
+      this.server = this.app.listen(this.port, () => {
         resolve();
       });
     });
   }
 
   close(): Promise<void> {
-    throw new Error('Method not implemented.');
+    return new Promise((resolve) => {
+      if (this.server) {
+        this.server.close(() => {
+          console.log(`server closed on port ${this.port}`);
+          this.server = null;
+          resolve();
+        });
+      } else resolve();
+    });
   }
 
   getPort(): number {
