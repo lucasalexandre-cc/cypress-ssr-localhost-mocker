@@ -46,7 +46,7 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
   }
 
   getPort(): number {
-    throw new Error('Method not implemented.');
+    return this.port;
   }
 
   mockRequest(requestInfo: IRequestInfo): void {
