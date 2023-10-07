@@ -76,5 +76,22 @@ describe('SSRLocalhostMocker', () => {
 
       await expect(sut.close()).rejects.toThrowError('SSRLocalhostMocker: trying to close without init');
     });
+
+    it('should close all servers', async () => {
+      const { sut, localhostServerFactory } = createSut();
+
+      const localhostServer3000 = new LocalhostServer(3000);
+      const localhostServer3001 = new LocalhostServer(3001);
+
+      jest.spyOn(localhostServerFactory, 'create').mockReturnValueOnce(localhostServer3000).mockReturnValueOnce(localhostServer3001);
+      const closeSpy3000 = jest.spyOn(localhostServer3000, 'close');
+      const closeSpy3001 = jest.spyOn(localhostServer3001, 'close');
+
+      await sut.init(3000, 3001);
+      await sut.close();
+
+      expect(closeSpy3000).toHaveBeenCalledTimes(1);
+      expect(closeSpy3001).toHaveBeenCalledTimes(1);
+    });
   });
 });

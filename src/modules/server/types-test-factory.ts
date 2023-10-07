@@ -6,6 +6,7 @@ export class LocalhostServer implements ILocalhostServer {
   }
 
   async init(): Promise<void> {}
+  async close(): Promise<void> {}
 
   getPort(): number {
     return this.port;

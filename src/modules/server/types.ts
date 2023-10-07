@@ -4,5 +4,6 @@ export interface ILocalhostServerFactory {
 
 export interface ILocalhostServer {
   init(): Promise<void>;
+  close(): Promise<void>;
   getPort(): number;
 }
