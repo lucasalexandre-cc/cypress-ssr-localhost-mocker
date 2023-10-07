@@ -11,3 +11,7 @@ export interface ILocalhostServer {
   mockRequest(requestInfo: IRequestInfo): void;
   clearAllMocks(): void;
 }
+
+export interface IRequest {}
+
+export interface IResponse {}
