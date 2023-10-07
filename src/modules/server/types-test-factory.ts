@@ -1,9 +1,15 @@
 import { ILocalhostServerFactory, ILocalhostServer } from './types';
 
 export class LocalhostServer implements ILocalhostServer {
-  constructor(private port: number) {}
+  constructor(private port: number) {
+    this.port = port;
+  }
 
   async init(): Promise<void> {}
+
+  getPort(): number {
+    return this.port;
+  }
 }
 
 export class LocalhostServerFactory implements ILocalhostServerFactory {

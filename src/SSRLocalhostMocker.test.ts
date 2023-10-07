@@ -30,5 +30,13 @@ describe('SSRLocalhostMocker', () => {
 
       expect(initSpy).not.toHaveBeenCalled();
     });
+
+    it('should throw if try to init with different ports', async () => {
+      const { sut } = createSut();
+
+      await sut.init(3000, 3001);
+
+      await expect(sut.init(3000, 3002)).rejects.toThrowError('SSRLocalhostMocker: trying to init with different ports');
+    });
   });
 });
