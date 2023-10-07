@@ -1,4 +1,4 @@
-import { LocalhostServerFactory } from './modules/server/types-test-factory';
+import { LocalhostServerFactory, LocalhostServer } from './modules/server/types-test-factory';
 import SSRLocalhostMocker from './SSRLocalhostMocker';
 
 function createSut() {
@@ -43,6 +43,30 @@ describe('SSRLocalhostMocker', () => {
       const { sut } = createSut();
 
       await expect(sut.init(3000, 3000)).rejects.toThrowError('SSRLocalhostMocker: trying to init with duplicated ports');
+    });
+
+    it('should initialize all servers', async () => {
+      const { sut, localhostServerFactory } = createSut();
+      const localhostServer3000 = new LocalhostServer(3000);
+      const localhostServer3001 = new LocalhostServer(3001);
+
+      jest.spyOn(localhostServerFactory, 'create').mockReturnValueOnce(localhostServer3000).mockReturnValueOnce(localhostServer3001);
+
+      const initSpy3000 = jest.spyOn(localhostServer3000, 'init');
+      const initSpy3001 = jest.spyOn(localhostServer3001, 'init');
+
+      await sut.init(3000, 3001);
+
+      expect(initSpy3000).toHaveBeenCalledTimes(1);
+      expect(initSpy3001).toHaveBeenCalledTimes(1);
+
+      initSpy3000.mockReset();
+      initSpy3001.mockReset();
+
+      await sut.init(3000, 3001);
+
+      expect(initSpy3000).toHaveBeenCalled();
+      expect(initSpy3001).toHaveBeenCalled();
     });
   });
 });
