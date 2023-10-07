@@ -7,7 +7,7 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
   constructor(private localhostServerFactory: ILocalhostServerFactory) {}
 
   async init(...ports: number[]): Promise<void> {
-    console.log(ports);
+    this.servers = ports.map((port) => this.localhostServerFactory.create(port));
     // TODO: implement logic
   }
 }
