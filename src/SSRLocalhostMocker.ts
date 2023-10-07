@@ -31,6 +31,11 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
     server.mockRequest(requestInfo);
   }
 
+  clearAllMocks(port: number): void {
+    const server = this.servers?.find((server) => server.getPort() === port);
+    if (!server) throw new Error('SSRLocalhostMocker: trying to clear all mock request from a non initialized server');
+  }
+
   private validatePorts(ports: number[]): void {
     if (this.servers) {
       const portsAreDifferent = this.servers.some((server) => !ports.includes(server.getPort()));
