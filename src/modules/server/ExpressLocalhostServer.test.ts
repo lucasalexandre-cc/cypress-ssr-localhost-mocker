@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Server } from 'http';
 import { Request, Response } from 'express';
 import { MockRequest } from '../request/types-test-factory';
 import ExpressLocalhostServer from './ExpressLocalhostServer';
 
 function mockExpressListen(port, callback) {
   callback();
-  return null;
+  return {} as Server;
 }
 
 describe('ExpressLocalhostServer', () => {
@@ -18,16 +19,6 @@ describe('ExpressLocalhostServer', () => {
 
       expect(listenSpy).toHaveBeenCalledTimes(1);
       expect(listenSpy).toHaveBeenCalledWith(3000, expect.any(Function));
-    });
-
-    it('should set serverOn to true', async () => {
-      const sut = new ExpressLocalhostServer(3000);
-      jest.spyOn(sut['app'], 'listen').mockImplementation(mockExpressListen);
-      expect(sut['serverOn']).toBeFalsy();
-
-      await sut.init();
-
-      expect(sut['serverOn']).toBeTruthy();
     });
 
     it('should not call listen again if is called twice', async () => {
@@ -91,6 +82,32 @@ describe('ExpressLocalhostServer', () => {
       expect(handleResponseSpy01).toHaveBeenCalledTimes(1);
       expect(handleResponseSpy01).toHaveBeenCalledWith(res);
       expect(handleResponseSpy02).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('close', () => {
+    it('should do nothing if server is not on', async () => {
+      const sut = new ExpressLocalhostServer(3000);
+
+      await sut.close();
+
+      expect(sut['server']).toBeNull();
+    });
+
+    it('should call server close if server is on', async () => {
+      const sut = new ExpressLocalhostServer(3000);
+      const closeFn = jest.fn().mockImplementation((callback) => {
+        callback();
+      });
+      jest.spyOn(sut['app'], 'listen').mockImplementation((port, callback) => {
+        callback();
+        return { close: closeFn } as unknown as Server;
+      });
+
+      await sut.init();
+      await sut.close();
+
+      expect(closeFn).toHaveBeenCalledTimes(1);
     });
   });
 });
