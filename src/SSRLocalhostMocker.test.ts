@@ -1,5 +1,6 @@
 import { LocalhostServerFactory, LocalhostServer } from './modules/server/types-test-factory';
 import SSRLocalhostMocker from './SSRLocalhostMocker';
+import { IRequestInfo } from './types';
 
 function createSut() {
   const localhostServerFactory = new LocalhostServerFactory();
@@ -104,6 +105,26 @@ describe('SSRLocalhostMocker', () => {
       };
 
       expect(testFunction).toThrowError('SSRLocalhostMocker: trying to mock request to a non initialized server');
+    });
+
+    it('should call correct server to mock request', async () => {
+      const { sut, localhostServerFactory } = createSut();
+
+      const localhostServer3000 = new LocalhostServer(3000);
+      const localhostServer3001 = new LocalhostServer(3001);
+
+      jest.spyOn(localhostServerFactory, 'create').mockReturnValueOnce(localhostServer3000).mockReturnValueOnce(localhostServer3001);
+      const mockRequestSpy3000 = jest.spyOn(localhostServer3000, 'mockRequest');
+      const mockRequestSpy3001 = jest.spyOn(localhostServer3001, 'mockRequest');
+
+      await sut.init(3000, 3001);
+
+      const requestParams: IRequestInfo = { method: 'GET', path: '/', response: { statusCode: 200 } };
+      sut.mockRequest(3000, requestParams);
+
+      expect(mockRequestSpy3000).toHaveBeenCalledTimes(1);
+      expect(mockRequestSpy3000).toHaveBeenCalledWith(requestParams);
+      expect(mockRequestSpy3001).not.toHaveBeenCalled();
     });
   });
 });
