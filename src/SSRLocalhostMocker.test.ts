@@ -94,4 +94,16 @@ describe('SSRLocalhostMocker', () => {
       expect(closeSpy3001).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('mockRequest', () => {
+    it('should throw if try to mock request to a non initialized server', () => {
+      const { sut } = createSut();
+
+      const testFunction = () => {
+        sut.mockRequest(3000, { method: 'GET', path: '/', response: { statusCode: 200 } });
+      };
+
+      expect(testFunction).toThrowError('SSRLocalhostMocker: trying to mock request to a non initialized server');
+    });
+  });
 });

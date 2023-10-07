@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ILocalhostServerFactory, ILocalhostServer } from './types';
 
 export class LocalhostServer implements ILocalhostServer {
@@ -7,6 +8,7 @@ export class LocalhostServer implements ILocalhostServer {
 
   async init(): Promise<void> {}
   async close(): Promise<void> {}
+  mockRequest(requestInfo: any): void {}
 
   getPort(): number {
     return this.port;
