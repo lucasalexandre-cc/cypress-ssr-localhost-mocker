@@ -19,5 +19,8 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
       const portsAreDifferent = this.servers.some((server) => !ports.includes(server.getPort()));
       if (portsAreDifferent) throw new Error('SSRLocalhostMocker: trying to init with different ports');
     }
+
+    const portsAreDuplicated = ports.some((port, index) => ports.indexOf(port) !== index);
+    if (portsAreDuplicated) throw new Error('SSRLocalhostMocker: trying to init with duplicated ports');
   }
 }
