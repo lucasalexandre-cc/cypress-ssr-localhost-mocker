@@ -38,5 +38,11 @@ describe('SSRLocalhostMocker', () => {
 
       await expect(sut.init(3000, 3002)).rejects.toThrowError('SSRLocalhostMocker: trying to init with different ports');
     });
+
+    it('should throw if try to init with duplicated ports', async () => {
+      const { sut } = createSut();
+
+      await expect(sut.init(3000, 3000)).rejects.toThrowError('SSRLocalhostMocker: trying to init with duplicated ports');
+    });
   });
 });
