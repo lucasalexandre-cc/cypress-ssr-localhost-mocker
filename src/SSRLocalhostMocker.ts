@@ -1,4 +1,4 @@
-import { ISSRLocalhostMocker } from './types';
+import { IRequestInfo, ISSRLocalhostMocker } from './types';
 import { ILocalhostServer, ILocalhostServerFactory } from './modules/server/types';
 
 export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
@@ -22,6 +22,12 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
 
     const promises = this.servers.map((server) => server.close());
     await Promise.all(promises);
+  }
+
+  mockRequest(port: number, requestInfo: IRequestInfo): void {
+    const server = this.servers?.find((server) => server.getPort() === port);
+    if (!server) throw new Error('SSRLocalhostMocker: trying to mock request to a non initialized server');
+    // server.mockRequest(requestInfo);
   }
 
   private validatePorts(ports: number[]): void {
