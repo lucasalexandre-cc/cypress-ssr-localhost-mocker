@@ -1,0 +1,26 @@
+{
+  "name": "cypress-ssr-mocker",
+  "version": "1.0.0",
+  "description": "You are using cypress to test a server-side-render frontend? And you need to mock a backend call from your localhost server? This extension is perfect for you!",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "author": "Lucas Alexandre",
+  "license": "MIT",
+  "keywords": [
+    "next",
+    "cypress",
+    "server",
+    "mocking",
+    "requests",
+    "library"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.5.5",
+    "@types/node": "^20.8.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  }
+}
