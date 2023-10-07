@@ -20,7 +20,8 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
   async close(): Promise<void> {
     if (!this.servers) throw new Error('SSRLocalhostMocker: trying to close without init');
 
-    return;
+    const promises = this.servers.map((server) => server.close());
+    await Promise.all(promises);
   }
 
   private validatePorts(ports: number[]): void {
