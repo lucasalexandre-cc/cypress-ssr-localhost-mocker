@@ -69,4 +69,12 @@ describe('SSRLocalhostMocker', () => {
       expect(initSpy3001).toHaveBeenCalled();
     });
   });
+
+  describe('close', () => {
+    it('should throw if try to close without init', async () => {
+      const { sut } = createSut();
+
+      await expect(sut.close()).rejects.toThrowError('SSRLocalhostMocker: trying to close without init');
+    });
+  });
 });
