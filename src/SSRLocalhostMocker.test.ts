@@ -138,5 +138,23 @@ describe('SSRLocalhostMocker', () => {
 
       expect(testFunction).toThrowError('SSRLocalhostMocker: trying to clear all mock request from a non initialized server');
     });
+
+    it('should call correct server to clear all mock request', async () => {
+      const { sut, localhostServerFactory } = createSut();
+
+      const localhostServer3000 = new LocalhostServer(3000);
+      const localhostServer3001 = new LocalhostServer(3001);
+
+      jest.spyOn(localhostServerFactory, 'create').mockReturnValueOnce(localhostServer3000).mockReturnValueOnce(localhostServer3001);
+      const clearAllMocksSpy3000 = jest.spyOn(localhostServer3000, 'clearAllMocks');
+      const clearAllMocksSpy3001 = jest.spyOn(localhostServer3001, 'clearAllMocks');
+
+      await sut.init(3000, 3001);
+
+      sut.clearAllMocks(3000);
+
+      expect(clearAllMocksSpy3000).toHaveBeenCalledTimes(1);
+      expect(clearAllMocksSpy3001).not.toHaveBeenCalled();
+    });
   });
 });
