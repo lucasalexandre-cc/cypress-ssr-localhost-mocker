@@ -12,6 +12,9 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
     if (!this.servers) {
       this.servers = ports.map((port) => this.localhostServerFactory.create(port));
     }
+
+    const promies = this.servers.map((server) => server.init());
+    await Promise.all(promies);
   }
 
   private validatePorts(ports: number[]): void {
