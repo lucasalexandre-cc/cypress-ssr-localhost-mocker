@@ -2,7 +2,7 @@ export interface IRequestInfo {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   path: string;
   bodyCheckFn?: (body: any) => boolean;
-  headers?: Record<string, string>;
+  headerCheckFn?: (header: any) => boolean;
   response: {
     statusCode: number;
     body?: string;

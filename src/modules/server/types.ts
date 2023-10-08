@@ -16,6 +16,7 @@ export interface IRequest {
   method: string;
   path: string;
   body: any;
+  headers: any;
 }
 
 export interface IResponse {}
