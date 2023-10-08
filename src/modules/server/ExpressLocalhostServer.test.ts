@@ -145,4 +145,21 @@ describe('ExpressLocalhostServer', () => {
       expect(sut['mockRequests']?.length).toBe(1);
     });
   });
+
+  describe('clearAllMocks', () => {
+    it('should empty mock request array', () => {
+      const { sut } = createSut(3000);
+
+      const requestInfo: IRequestInfo = { method: 'GET', path: '/', response: { statusCode: 200 } };
+      sut.mockRequest(requestInfo);
+      sut.mockRequest(requestInfo);
+      sut.mockRequest(requestInfo);
+
+      expect(sut['mockRequests']?.length).toBe(3);
+
+      sut.clearAllMocks();
+
+      expect(sut['mockRequests']?.length).toBe(0);
+    });
+  });
 });
