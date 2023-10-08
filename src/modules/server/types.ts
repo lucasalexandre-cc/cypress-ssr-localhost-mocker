@@ -19,4 +19,7 @@ export interface IRequest {
   headers: any;
 }
 
-export interface IResponse {}
+export interface IResponse {
+  status: (statusCode: number) => IResponse;
+  json: (body: any) => void;
+}

@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IRequestInfo } from '../../types';
 import MockRequest from './MockRequest';
 import { MatchPathTest } from '../../utils/types-test-factory';
+import { IResponse } from '../server/types';
 
 function createSut(requestInfo: IRequestInfo) {
   const matchPath = new MatchPathTest();
@@ -118,6 +120,62 @@ describe('MockRequest', () => {
       const result = sut.matchRequest(request);
 
       expect(result).toBe(true);
+    });
+  });
+
+  describe('handleResponse', () => {
+    it('should return response status code informed', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.response.statusCode = 500;
+
+      const { sut } = createSut(requestInfo);
+      const statusMock = jest.fn();
+      const jsonMock = jest.fn();
+      const response: IResponse = {
+        status: statusMock,
+        json: jsonMock,
+      };
+      statusMock.mockReturnValue(response);
+
+      sut.handleResponse(response);
+
+      expect(response.status).toHaveBeenCalledWith(500);
+    });
+
+    it('should send empty hash on response body if not informed', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.response.body = undefined;
+
+      const { sut } = createSut(requestInfo);
+      const statusMock = jest.fn();
+      const jsonMock = jest.fn();
+      const response: IResponse = {
+        status: statusMock,
+        json: jsonMock,
+      };
+      statusMock.mockReturnValue(response);
+
+      sut.handleResponse(response);
+
+      expect(jsonMock).toHaveBeenCalledWith({});
+    });
+
+    it('should send informed hash on response body if informed', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.response.body = { test: true };
+
+      const { sut } = createSut(requestInfo);
+      const statusMock = jest.fn();
+      const jsonMock = jest.fn();
+      const response: IResponse = {
+        status: statusMock,
+        json: jsonMock,
+      };
+      statusMock.mockReturnValue(response);
+
+      sut.handleResponse(response);
+
+      expect(jsonMock).toHaveBeenCalledWith({ test: true });
     });
   });
 });

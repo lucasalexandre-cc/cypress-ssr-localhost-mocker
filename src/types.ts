@@ -5,7 +5,7 @@ export interface IRequestInfo {
   headerCheckFn?: (header: any) => boolean;
   response: {
     statusCode: number;
-    body?: string;
+    body?: any;
     headers?: Record<string, string>;
   };
 }
