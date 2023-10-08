@@ -75,5 +75,49 @@ describe('MockRequest', () => {
       expect(result).toBe(false);
       expect(headerCheckFn).toHaveBeenCalledWith(request.headers);
     });
+
+    it('should return true if has body fn check and returns true', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.path = '/test';
+      requestInfo.method = 'GET';
+      requestInfo.bodyCheckFn = () => true;
+
+      const { sut, matchPath } = createSut(requestInfo);
+      jest.spyOn(matchPath, 'match').mockReturnValueOnce(true);
+
+      const request = { method: 'GET', path: '/test', body: { test: true }, headers: {} };
+      const result = sut.matchRequest(request);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true if has header function and its return true', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.path = '/test';
+      requestInfo.method = 'GET';
+      requestInfo.headerCheckFn = () => true;
+
+      const { sut, matchPath } = createSut(requestInfo);
+      jest.spyOn(matchPath, 'match').mockReturnValueOnce(true);
+
+      const request = { method: 'GET', path: '/test', body: {}, headers: { test: true } };
+      const result = sut.matchRequest(request);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return true if do not pass header and body checkers fn', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.path = '/test';
+      requestInfo.method = 'GET';
+
+      const { sut, matchPath } = createSut(requestInfo);
+      jest.spyOn(matchPath, 'match').mockReturnValueOnce(true);
+
+      const request = { method: 'GET', path: '/test', body: {}, headers: {} };
+      const result = sut.matchRequest(request);
+
+      expect(result).toBe(true);
+    });
   });
 });
