@@ -12,6 +12,8 @@ export interface ILocalhostServer {
   clearAllMocks(): void;
 }
 
-export interface IRequest {}
+export interface IRequest {
+  method: string;
+}
 
 export interface IResponse {}
