@@ -58,7 +58,7 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
   }
 
   clearAllMocks(): void {
-    throw new Error('Method not implemented.');
+    this.mockRequests = [];
   }
 
   private handleRequest(method: string, req: Request, res: Response) {
