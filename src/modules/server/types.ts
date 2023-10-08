@@ -15,6 +15,7 @@ export interface ILocalhostServer {
 export interface IRequest {
   method: string;
   path: string;
+  body: any;
 }
 
 export interface IResponse {}

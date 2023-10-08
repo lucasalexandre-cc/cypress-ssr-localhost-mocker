@@ -20,7 +20,7 @@ describe('MockRequest', () => {
 
       const { sut } = createSut(requestInfo);
 
-      const request = { method: 'GET', path: '/' };
+      const request = { method: 'GET', path: '/', body: {} };
       const result = sut.matchRequest(request);
 
       expect(result).toBe(false);
@@ -35,11 +35,28 @@ describe('MockRequest', () => {
 
       const matchPathSpy = jest.spyOn(matchPath, 'match').mockReturnValueOnce(false);
 
-      const request = { method: 'GET', path: '/' };
+      const request = { method: 'GET', path: '/', body: {} };
       const result = sut.matchRequest(request);
 
       expect(matchPathSpy).toHaveBeenCalledWith('/test', '/');
       expect(result).toBe(false);
+    });
+
+    it('should return false if has body function and its return false', () => {
+      const requestInfo = generateDefaultRequestInfo();
+      requestInfo.path = '/test';
+      requestInfo.method = 'GET';
+      const bodyCheckFn = jest.fn().mockReturnValueOnce(false);
+      requestInfo.bodyCheckFn = bodyCheckFn;
+
+      const { sut, matchPath } = createSut(requestInfo);
+      jest.spyOn(matchPath, 'match').mockReturnValueOnce(true);
+
+      const request = { method: 'GET', path: '/test', body: { test: true } };
+      const result = sut.matchRequest(request);
+
+      expect(result).toBe(false);
+      expect(bodyCheckFn).toHaveBeenCalledWith(request.body);
     });
   });
 });
