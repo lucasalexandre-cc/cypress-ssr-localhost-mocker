@@ -15,6 +15,8 @@ export default class MockRequest implements IMockRequest {
   matchRequest(request: IRequest): boolean {
     if (this.requestInfo.method !== request.method) return false;
     if (!this.matchPath.match(this.requestInfo.path, request.path)) return false;
+    if (this.requestInfo.bodyCheckFn && !this.requestInfo.bodyCheckFn(request.body)) return false;
+    if (this.requestInfo.headerCheckFn && !this.requestInfo.headerCheckFn(request.headers)) return false;
 
     return true;
   }
