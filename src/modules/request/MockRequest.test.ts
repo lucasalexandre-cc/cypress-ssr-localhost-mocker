@@ -33,11 +33,12 @@ describe('MockRequest', () => {
 
       const { sut, matchPath } = createSut(requestInfo);
 
-      jest.spyOn(matchPath, 'match').mockReturnValueOnce(false);
+      const matchPathSpy = jest.spyOn(matchPath, 'match').mockReturnValueOnce(false);
 
       const request = { method: 'GET', path: '/' };
       const result = sut.matchRequest(request);
 
+      expect(matchPathSpy).toHaveBeenCalledWith('/test', '/');
       expect(result).toBe(false);
     });
   });
