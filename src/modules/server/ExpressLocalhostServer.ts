@@ -3,7 +3,7 @@ import express, { Express, Request, Response } from 'express';
 
 import { IRequestInfo } from '../../types';
 import { ILocalhostServer } from './types';
-import { IMockRequest } from '../request/types';
+import { IMockRequest, IMockRequestFactory } from '../request/types';
 
 const methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
@@ -12,7 +12,10 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
   private app: Express;
   private mockRequests: IMockRequest[] = [];
 
-  constructor(private port: number) {
+  constructor(
+    private port: number,
+    private mockRequestFactory: IMockRequestFactory,
+  ) {
     this.port = port;
     this.app = express();
   }
@@ -50,7 +53,8 @@ export default class ExpressLocalhostServer implements ILocalhostServer {
   }
 
   mockRequest(requestInfo: IRequestInfo): void {
-    throw new Error('Method not implemented.');
+    const mockRequest = this.mockRequestFactory.create(requestInfo);
+    this.mockRequests.push(mockRequest);
   }
 
   clearAllMocks(): void {
