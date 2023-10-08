@@ -22,6 +22,6 @@ export default class MockRequest implements IMockRequest {
   }
 
   handleResponse(response: IResponse): void {
-    // TODO: implement
+    response.status(this.requestInfo.response.statusCode).json(this.requestInfo.response.body || {});
   }
 }
