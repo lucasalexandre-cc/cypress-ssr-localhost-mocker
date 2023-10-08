@@ -1,18 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Server } from 'http';
 import { Request, Response } from 'express';
-import { MockRequest } from '../request/types-test-factory';
+import { MockRequest, MockRequestFactory } from '../request/types-test-factory';
 import ExpressLocalhostServer from './ExpressLocalhostServer';
+import { IRequestInfo } from '../../types';
 
 function mockExpressListen(port, callback) {
   callback();
   return {} as Server;
 }
 
+function createSut(port: number) {
+  const mockRequestFactory = new MockRequestFactory();
+  const sut = new ExpressLocalhostServer(port, mockRequestFactory);
+
+  return {
+    sut,
+    mockRequestFactory,
+  };
+}
+
 describe('ExpressLocalhostServer', () => {
   describe('init', () => {
     it('should call express listen with correct params', async () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
       const listenSpy = jest.spyOn(sut['app'], 'listen').mockImplementation(mockExpressListen);
 
       await sut.init();
@@ -22,7 +33,7 @@ describe('ExpressLocalhostServer', () => {
     });
 
     it('should not call listen again if is called twice', async () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
       const listenSpy = jest.spyOn(sut['app'], 'listen').mockImplementation(mockExpressListen);
 
       await sut.init();
@@ -37,7 +48,7 @@ describe('ExpressLocalhostServer', () => {
 
     // I'll test the private method handleRequest, and assume that init method is deliverying the responsability to this method
     it('should return 404 if no mock request is matched', async () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
       jest.spyOn(sut['app'], 'listen').mockImplementation(mockExpressListen);
 
       await sut.init();
@@ -61,7 +72,7 @@ describe('ExpressLocalhostServer', () => {
     });
 
     it('should call handleResponse if mock request is matched', async () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
       jest.spyOn(sut['app'], 'listen').mockImplementation(mockExpressListen);
 
       await sut.init();
@@ -87,7 +98,7 @@ describe('ExpressLocalhostServer', () => {
 
   describe('close', () => {
     it('should do nothing if server is not on', async () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
 
       await sut.close();
 
@@ -95,7 +106,7 @@ describe('ExpressLocalhostServer', () => {
     });
 
     it('should call server close if server is on', async () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
       const closeFn = jest.fn().mockImplementation((callback) => {
         callback();
       });
@@ -113,11 +124,25 @@ describe('ExpressLocalhostServer', () => {
 
   describe('getPort', () => {
     it('should return port', () => {
-      const sut = new ExpressLocalhostServer(3000);
+      const { sut } = createSut(3000);
 
       const result = sut.getPort();
 
       expect(result).toBe(3000);
+    });
+  });
+
+  describe('mockRequest', () => {
+    it('should add mock request to mock requests array', () => {
+      const { sut, mockRequestFactory } = createSut(3000);
+
+      const mockRequestFactorySpy = jest.spyOn(mockRequestFactory, 'create');
+
+      const requestInfo: IRequestInfo = { method: 'GET', path: '/', response: { statusCode: 200 } };
+      sut.mockRequest(requestInfo);
+
+      expect(mockRequestFactorySpy).toBeCalledWith(requestInfo);
+      expect(sut['mockRequests']?.length).toBe(1);
     });
   });
 });
