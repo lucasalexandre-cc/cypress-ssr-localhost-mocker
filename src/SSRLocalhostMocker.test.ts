@@ -96,12 +96,13 @@ describe('SSRLocalhostMocker', () => {
     });
   });
 
-  describe('mockRequest', () => {
+  describe('getMockBackendRequest', () => {
     it('should throw if try to mock request to a non initialized server', () => {
       const { sut } = createSut();
+      const method = sut.getMockBackendRequest();
 
       const testFunction = () => {
-        sut.mockRequest(3000, { method: 'GET', path: '/', response: { statusCode: 200 } });
+        method({ port: 3000, routeMock: { method: 'GET', path: '/', response: { statusCode: 200 } } });
       };
 
       expect(testFunction).toThrowError('SSRLocalhostMocker: trying to mock request to a non initialized server');
@@ -109,6 +110,7 @@ describe('SSRLocalhostMocker', () => {
 
     it('should call correct server to mock request', async () => {
       const { sut, localhostServerFactory } = createSut();
+      const method = sut.getMockBackendRequest();
 
       const localhostServer3000 = new LocalhostServer(3000);
       const localhostServer3001 = new LocalhostServer(3001);
@@ -120,7 +122,7 @@ describe('SSRLocalhostMocker', () => {
       await sut.init(3000, 3001);
 
       const requestParams: IRequestInfo = { method: 'GET', path: '/', response: { statusCode: 200 } };
-      sut.mockRequest(3000, requestParams);
+      method({ port: 3000, routeMock: requestParams });
 
       expect(mockRequestSpy3000).toHaveBeenCalledTimes(1);
       expect(mockRequestSpy3000).toHaveBeenCalledWith(requestParams);
@@ -128,12 +130,13 @@ describe('SSRLocalhostMocker', () => {
     });
   });
 
-  describe('clearAllMocks', () => {
+  describe('getClearAllMocks', () => {
     it('should throw if try to clear all mock request from a non initialized server', () => {
       const { sut } = createSut();
+      const method = sut.getClearAllMocks();
 
       const testFunction = () => {
-        sut.clearAllMocks(3000);
+        method({ port: 3000 });
       };
 
       expect(testFunction).toThrowError('SSRLocalhostMocker: trying to clear all mock request from a non initialized server');
@@ -141,6 +144,7 @@ describe('SSRLocalhostMocker', () => {
 
     it('should call correct server to clear all mock request', async () => {
       const { sut, localhostServerFactory } = createSut();
+      const method = sut.getClearAllMocks();
 
       const localhostServer3000 = new LocalhostServer(3000);
       const localhostServer3001 = new LocalhostServer(3001);
@@ -151,7 +155,7 @@ describe('SSRLocalhostMocker', () => {
 
       await sut.init(3000, 3001);
 
-      sut.clearAllMocks(3000);
+      method({ port: 3000 });
 
       expect(clearAllMocksSpy3000).toHaveBeenCalledTimes(1);
       expect(clearAllMocksSpy3001).not.toHaveBeenCalled();

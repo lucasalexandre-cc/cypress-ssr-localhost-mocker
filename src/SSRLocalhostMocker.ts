@@ -1,4 +1,5 @@
-import { IRequestInfo, ISSRLocalhostMocker } from './types';
+import fs from 'fs';
+import { IMockBackendRequestParams, IRequestInfo, ISSRLocalhostMocker } from './types';
 import { ILocalhostServer, ILocalhostServerFactory } from './modules/server/types';
 
 export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
@@ -24,14 +25,33 @@ export default class SSRLocalhostMocker implements ISSRLocalhostMocker {
     await Promise.all(promises);
   }
 
-  mockRequest(port: number, requestInfo: IRequestInfo): void {
+  getMockBackendRequest() {
+    return ({ port, fixturePath, routeMock }: IMockBackendRequestParams) => {
+      if (fixturePath) {
+        const responseData = fs.readFileSync(`./cypress/fixtures/${fixturePath}.json`, 'utf8');
+        routeMock.response.body = JSON.parse(responseData);
+      }
+
+      this.mockRequest(port, routeMock);
+      return null;
+    };
+  }
+
+  getClearAllMocks(): ({ port }: { port: number }) => void {
+    return ({ port }: { port: number }) => {
+      this.clearAllMocks(port);
+      return null;
+    };
+  }
+
+  private mockRequest(port: number, requestInfo: IRequestInfo): void {
     const server = this.servers?.find((server) => server.getPort() === port);
     if (!server) throw new Error('SSRLocalhostMocker: trying to mock request to a non initialized server');
 
     server.mockRequest(requestInfo);
   }
 
-  clearAllMocks(port: number): void {
+  private clearAllMocks(port: number): void {
     const server = this.servers?.find((server) => server.getPort() === port);
     if (!server) throw new Error('SSRLocalhostMocker: trying to clear all mock request from a non initialized server');
 
