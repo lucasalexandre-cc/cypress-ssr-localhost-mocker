@@ -4,7 +4,7 @@
 
 ## Overview
 
-Enhance your Cypress testing experience when working with server-side rendering frameworks like Next.js by seamlessly mocking API calls from your server to other localhost api's. Introducing Cypress SSR Localhost Mocket, a versatile and lightweight library designed to address the challenges of mocking server requests during automated tests.
+Enhance your Cypress testing experience when working with server-side rendering frameworks like Next.js by seamlessly mocking API calls from your server to other localhost api's. Introducing Cypress SSR Localhost Mocket, a library designed to address the challenges of mocking server requests during automated tests.
 
 #### The Challenge
 
@@ -12,7 +12,7 @@ Picture yourself immersed in the world of automated testing, utilizing Cypress a
 
 #### The Solution
 
-Enter **Cypress SSR Localhost Mocker**, a solution born out of real-world necessity. Initially developed to streamline testing within our own organization, this library has evolved into an open-source project, ready to empower developers facing similar challenges.
+Enter **Cypress SSR Localhost Mocker**, a solution mock server side requests inside your cypress tests.
 
 ## Installation
 
@@ -28,90 +28,106 @@ In your cypress config file, for example _cypress.config.ts_, add the following 
 
 ```typescript
 import { defineConfig } from 'cypress';
-import SSRLocalhostMocker from 'cypress-ssr-mocker';
+import SSRLocalhostMocker from 'cypress-ssr-mocker'; // import library
 
 export default defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       on('before:spec', () => {
-        return SSRLocalhostMocker.init(3000); // change to your localhost ports (ex: 3000, 3001, 3002, ....)
+        return SSRLocalhostMocker.init(3000); // it'll initialize your servers. You can pass any ports you want on params, like: (3000, 3001, 3002, ...)
       });
       on('after:spec', () => {
-        return SSRLocalhostMocker.close();
+        return SSRLocalhostMocker.close(); // it'll close server when necessary
       });
       on('task', {
-        mockBackendRequest: SSRLocalhostMocker.getMockBackendRequest(),
-        clearAllbackendMockRequests: SSRLocalhostMocker.getClearAllMocks(),
+        mockBackendRequest: SSRLocalhostMocker.getMockBackendRequest(), // it'll create a helper to mock requests
+        clearAllbackendMockRequests: SSRLocalhostMocker.getClearAllMocks(), // it'll create a helper to clear mock requests
       });
     },
   },
 });
 ```
 
-- On **SSRLocalhostMocker.init**, it will initialize fake's localhost servers for each port you pass. This code will run before you test stack. This is why it's on _before:spec_
-- On **SSRLocalhostMocker.close**, it will close initialized servers, when your tests ends.
-- On **SSRLocalhostMocker.getMockBackendRequest** and **SSRLocalhostMocker.getClearAllMocks**, is where the magic occurs. It will create the mock and clear mock methods to use in your cypress tests.
+#### Recommendations (optional)
 
-#### Customize your mock calls (optional)
-
-If you want to create helpers to make easier to write you own tests, you can create helpers on the cypress commands. Here it's a helper example:
+- Clear you mocker's every each test. To one test don't interfere in another, you can add the following code on you commands file, for example:
 
 ```typescript
-import { IMockBackendRequestParams } from 'cypress-ssr-mocker';
+// commands.ts
 
-// clear mocks before each new test
 beforeEach(() => {
   cy.task('clearAllbackendMockRequests', { port: 3000 });
 });
+```
 
-// create a helper command to mock requests
+- If you want to create a typed helper to help you to use the mocking methods, you can create
+
+```typescript
+// commands.ts
+import { IMockBackendRequestParams } from 'cypress-ssr-mocker';
+
 Cypress.Commands.add('mockBackendRequest', (params: IMockBackendRequestParams) => {
   cy.task('mockBackendRequest', params);
 });
 ```
 
-With this helper, you can create codes like:
+With this helper, you can create tests like:
 
 ```typescript
-cy.mockBackendRequest({
-  port: 3000,
-  routeMock: {
-    path: '/api/v3/user',
-    method: 'GET',
-    response: {
-      statusCode: 200,
-    },
-  },
-  fixturePath: 'my_fixture_file_path',
+// testing.cy.ts
+
+describe('Testing', () => {
+  it('find user picture when load page', () => {
+    // this user request is called on server side, and it's mocked now
+    cy.mockBackendRequest({
+      port: 3000,
+      routeMock: {
+        path: '/api/v3/user',
+        method: 'GET',
+        response: {
+          statusCode: 200,
+        },
+      },
+      fixturePath: 'my_fixture_file_path',
+    });
+
+    cy.visit('/test_page');
+
+    cy.find('[class*=user-picture]').should('be.visible');
+  });
 });
 ```
 
-#### `mockBackendRequest (options)`
+## Documentation
 
-| Parameter                | Type   | Description                                                                                                                                                                                                               |
-| ------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `port`                   | Number | The port number of your localhost you want to mock request.                                                                                                                                                               |
-| `routeMock`              | Object | Object with informations about the request you want to mock, and which response you want to give                                                                                                                          |
-| `fixturePath (optional)` | String | Path of your fixture (if the mock response is from a fixture). You just need to pass the fixture path, without ".json" example. For example: `user/logged`. It will load the fixture `/cypress/fixtures/user/logged.json` |
+Understanding our mainly mock method and which params is supported:
 
-##### `routeMock`
+#### `mockBackendRequest(options)`
 
-| Parameter                  | Type     | Description                                                                                                                                                     |
-| -------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `method`                   | String   | Request method you want to mock. Available options: "GET" \| "POST" \| "PUT" \| "DELETE" \|                                                                     |
-| `path`                     | String   | Request path you want to mock. For example, `/api/v3/user`. You will mock this path request                                                                     |
-| `bodyCheckFn (optional)`   | Function | If you want to create a mock to a route just if its body match some infos, you can inform this function that receives a body hash and returns a boolean         |
-| `headerCheckFn (optional)` | Function | If you want to create a mock to a route just if its boheaderdy match some infos, you can inform this function that receives a header hash and returns a boolean |
-| `response`                 | Object   | Descripe the response data of the route you are mocking. It receives: { statusCode: Number; body?: Any; headers: Any; }                                         |
+| Parameter                        | Type   | Description                                                                                                                                                                                                               |
+| -------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options.port`                   | Number | The port number of your localhost you want to mock request.                                                                                                                                                               |
+| `options.routeMock`              | Object | Object with informations about the request you want to mock, and which response you want to give                                                                                                                          |
+| `options.fixturePath (optional)` | String | Path of your fixture (if the mock response is from a fixture). You just need to pass the fixture path, without ".json" example. For example: `user/logged`. It will load the fixture `/cypress/fixtures/user/logged.json` |
+
+##### `options.routeMock`
+
+| Parameter                                    | Type     | Description                                                                                                                                                     |
+| -------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options.routeMock.method`                   | String   | Request method you want to mock. Available options: "GET" \| "POST" \| "PUT" \| "DELETE" \|                                                                     |
+| `options.routeMock.path`                     | String   | Request path you want to mock. For example, `/api/v3/user`. You will mock this path request                                                                     |
+| `options.routeMock.bodyCheckFn (optional)`   | Function | If you want to create a mock to a route just if its body match some infos, you can inform this function that receives a body hash and returns a boolean         |
+| `options.routeMock.headerCheckFn (optional)` | Function | If you want to create a mock to a route just if its boheaderdy match some infos, you can inform this function that receives a header hash and returns a boolean |
+| `options.routeMock.response`                 | Object   | Descripe the response data of the route you are mocking. It receives: { statusCode: Number; body?: Any; headers: Any; }                                         |
 
 ## Contributing
 
-It's an open source library created to solve I specific problem I passed. Of course, that is a lot of new features that can be improved. Feel free to give some ideas, report bugs, submit fix or features, and go on...
+It's an open source library created to solve I specific problem I passed. Of course, that is a lot of new features that can be improved. Feel free to give some ideas, report bugs, submit fix or features ...
 
 ## Changelog
 
 All notable changes to this project will be documented in this file.
 
-### [1.0.0] - 2023-12-02
+### [1.0.0] - 2023-12-20
 
 - Initial release.
