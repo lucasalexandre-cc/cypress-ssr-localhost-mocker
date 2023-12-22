@@ -28,7 +28,7 @@ In your cypress config file, for example _cypress.config.ts_, add the following 
 
 ```typescript
 import { defineConfig } from 'cypress';
-import SSRLocalhostMocker from 'cypress-ssr-mocker'; // import library
+import SSRLocalhostMocker from 'cypress-ssr-localhost-mocker'; // import library
 
 export default defineConfig({
   e2e: {
@@ -64,7 +64,7 @@ beforeEach(() => {
 
 ```typescript
 // commands.ts
-import { IMockBackendRequestParams } from 'cypress-ssr-mocker';
+import { IMockBackendRequestParams } from 'cypress-ssr-localhost-mocker';
 
 Cypress.Commands.add('mockBackendRequest', (params: IMockBackendRequestParams) => {
   cy.task('mockBackendRequest', params);
@@ -123,11 +123,3 @@ Understanding our mainly mock method and which params is supported:
 ## Contributing
 
 It's an open source library created to solve I specific problem I passed. Of course, that is a lot of new features that can be improved. Feel free to give some ideas, report bugs, submit fix or features ...
-
-## Changelog
-
-All notable changes to this project will be documented in this file.
-
-### [1.0.0] - 2023-12-20
-
-- Initial release.
