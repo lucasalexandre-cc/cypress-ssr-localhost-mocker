@@ -1,6 +1,6 @@
 {
   "name": "cypress-ssr-localhost-mocker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "You are using cypress to test a server-side-render frontend? And you need to mock a backend call from your localhost server? This extension is perfect for you!",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
