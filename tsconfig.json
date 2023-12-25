@@ -5,7 +5,8 @@
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": ["cypress"]
   },
   "include": [
     "src/**/*.ts"
