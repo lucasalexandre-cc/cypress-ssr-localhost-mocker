@@ -8,6 +8,10 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucasalexandre-cc/cypress-ssr-localhost-mocker.git"
+  },
   "scripts": {
     "build": "rm -rf dist/ && tsup src/index.ts --format cjs,esm --dts",
     "test": "jest"

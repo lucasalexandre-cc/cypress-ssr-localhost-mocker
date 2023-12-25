@@ -4,7 +4,7 @@
 
 ## Overview
 
-Enhance your Cypress testing experience when working with server-side rendering frameworks like Next.js by seamlessly mocking API calls from your server to other localhost api's. Introducing Cypress SSR Localhost Mocket, a library designed to address the challenges of mocking server requests during automated tests.
+Enhance your Cypress testing experience when working with server-side rendering frameworks like Next.js by seamlessly mocking API calls from your server to other localhost api's. Introducing Cypress SSR Localhost Mocker, a library designed to address the challenges of mocking server requests during automated tests.
 
 #### The Challenge
 
@@ -19,7 +19,7 @@ Enter **Cypress SSR Localhost Mocker**, a solution mock server side requests ins
 #### Install our library in your node project
 
 ```bash
-npm install cypress-ssr-localhost-mocket --save-dev
+npm install cypress-ssr-localhost-mocker --save-dev
 ```
 
 #### Update your cypress config
