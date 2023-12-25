@@ -48,30 +48,15 @@ export default defineConfig({
 });
 ```
 
-#### Recommendations (optional)
-
-- Clear you mocker's every each test. To one test don't interfere in another, you can add the following code on you commands file, for example:
+#### Add helpers on commands
 
 ```typescript
 // commands.ts
 
-beforeEach(() => {
-  cy.task('clearAllbackendMockRequests', { port: 3000 });
-});
+import 'cypress-ssr-localhost-mocker/commands';
 ```
 
-- If you want to create a typed helper to help you to use the mocking methods, you can create
-
-```typescript
-// commands.ts
-import { IMockBackendRequestParams } from 'cypress-ssr-localhost-mocker';
-
-Cypress.Commands.add('mockBackendRequest', (params: IMockBackendRequestParams) => {
-  cy.task('mockBackendRequest', params);
-});
-```
-
-With this helper, you can create tests like:
+Now, you can create tests like:
 
 ```typescript
 // testing.cy.ts
